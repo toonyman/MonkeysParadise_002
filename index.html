@@ -738,6 +738,72 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
+
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--bg-dark);
+            margin: auto;
+            padding: 2rem;
+            border: 1px solid var(--accent-primary);
+            width: 80%;
+            max-width: 1200px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            color: var(--accent-negative);
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-close-btn:hover,
+        .modal-close-btn:focus {
+            color: #ff006e;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #rawData-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        #rawData-table th, #rawData-table td {
+            border: 1px solid var(--accent-tertiary);
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        #rawData-table th {
+            background-color: var(--header-bg);
+            color: var(--accent-primary);
+        }
+
+        #rawData-table tr:nth-child(even) {
+            background-color: var(--stats-bg);
+        }
     </style>
 </head>
 <body>
@@ -770,6 +836,7 @@
                         </select>
                     </div>
                     <button class="btn active" id="bubbleView" aria-label="Bubble view mode">Bubble View</button>
+                    <button class="btn" id="rawDataView" aria-label="Raw data view mode">Raw Data</button>
                     <button class="btn" id="resetView" aria-label="Reset view">Reset</button>
                     <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
                         <span id="themeIcon">🌙</span>
@@ -778,18 +845,6 @@
             </nav>
         </div>
     </header>
-
-    <!-- Google AdSense - Top Banner Ad -->
-    <aside class="ad-container ad-top-banner" role="complementary" aria-label="Advertisement">
-        <div class="ad-label">Advertisement</div>
-        <!-- Google AdSense 코드를 여기에 삽입 -->
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-7644009675634803"
-             data-ad-slot="XXXXXXXXXX"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-    </aside>
 
     <!-- Statistics Bar -->
     <aside class="stats-bar" role="complementary" aria-label="Trending statistics">
@@ -846,18 +901,6 @@
             <div class="treemap-container" id="treemapContainer" role="region" aria-live="polite"></div>
         </article>
 
-        <!-- Google AdSense - Middle Content Ad -->
-        <aside class="ad-container ad-middle-content" role="complementary" aria-label="Advertisement">
-            <div class="ad-label">Advertisement</div>
-            <!-- Google AdSense 코드를 여기에 삽입 -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-7644009675634803"
-                 data-ad-slot="XXXXXXXXXX"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-        </aside>
-    </main>
 
     <!-- Trend Details Panel -->
     <aside class="info-panel" id="infoPanel" role="dialog" aria-labelledby="infoTitle" aria-hidden="true">
@@ -890,17 +933,28 @@
         </a>
     </aside>
 
-    <!-- Google AdSense - Bottom Banner Ad -->
-    <aside class="ad-container ad-bottom-banner" role="complementary" aria-label="Advertisement">
-        <div class="ad-label">Advertisement</div>
-        <!-- Google AdSense 코드를 여기에 삽입 -->
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-7644009675634803"
-             data-ad-slot="XXXXXXXXXX"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-    </aside>
+    <!-- Raw Data Modal -->
+    <div id="rawDataModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-btn" id="closeRawDataModal">&times;</span>
+            <h2>Raw Trend Data</h2>
+            <table id="rawData-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Volume</th>
+                        <th>Change</th>
+                        <th>Peak Time</th>
+                        <th>Region</th>
+                    </tr>
+                </thead>
+                <tbody id="rawData-tbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 
     <!-- Footer with SEO Content -->
     <footer role="contentinfo" style="background: rgba(10, 14, 39, 0.9); padding: 3rem; margin-top: 3rem; color: var(--text-secondary);">
@@ -1170,9 +1224,7 @@
             themeIcon.textContent = newTheme === 'dark' ? '🌙' : '☀️';
         });
 
-        // Initialize Google AdSense ads (3 ad units)
-        (adsbygoogle = window.adsbygoogle || []).push({});
-        (adsbygoogle = window.adsbygoogle || []).push({});
+        // Initialize Google AdSense ads (1 ad unit)
         (adsbygoogle = window.adsbygoogle || []).push({});
 
 
@@ -1207,6 +1259,42 @@
             treemapView.setTrends(newTrends);
             document.getElementById('totalTrends').textContent = newTrends.length;
             document.getElementById('topTrend').textContent = newTrends[0].name;
+        });
+
+        // Raw Data Modal
+        const rawDataModal = document.getElementById('rawDataModal');
+        const rawDataBtn = document.getElementById('rawDataView');
+        const closeRawDataModal = document.getElementById('closeRawDataModal');
+        const rawDataTbody = document.getElementById('rawData-tbody');
+
+        const populateRawDataTable = () => {
+            rawDataTbody.innerHTML = '';
+            treemapView.allTrends.forEach(trend => {
+                const row = `<tr>
+                    <td>${trend.name}</td>
+                    <td>${trend.category}</td>
+                    <td>${trend.volume.toLocaleString()}</td>
+                    <td>${trend.change}%</td>
+                    <td>${trend.peakTime}</td>
+                    <td>${trend.region}</td>
+                </tr>`;
+                rawDataTbody.innerHTML += row;
+            });
+        };
+
+        rawDataBtn.addEventListener('click', () => {
+            populateRawDataTable();
+            rawDataModal.style.display = 'flex';
+        });
+
+        closeRawDataModal.addEventListener('click', () => {
+            rawDataModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target == rawDataModal) {
+                rawDataModal.style.display = 'none';
+            }
         });
     </script>
 </body>
