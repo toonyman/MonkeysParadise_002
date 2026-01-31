@@ -1,0 +1,22 @@
+.blog-posts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.blog-post {
+    background: rgba(10, 14, 39, 0.5);
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.blog-post h2 {
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+}
+
+.blog-post p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}

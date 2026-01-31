@@ -42,7 +42,12 @@
     * 클릭 시 전체 트렌드 데이터를 테이블 형태로 보여주는 모달창을 구현했습니다.
     * 모달창을 위한 HTML, CSS, JavaScript 코드를 추가했습니다.
 
-*   **AdSense Fix:** Added a new section with static articles to `index.html` to provide content for the AdSense crawler and resolve the "Publisher content not available" issue. This included creating `style.css` and `main.js` and adding styles for the new content.
+*   **AdSense Fix (Low Value Content):** To address the "low value content" rejection, the following changes were made:
+    *   Created new pages: `blog.html`, `about.html`, `contact.html`, `privacypolicy.html`, and `termsofservice.html`.
+    *   Added a dedicated blog section with more detailed articles.
+    *   Added content to the "About Us" and "Contact Us" pages.
+    *   Added Privacy Policy and Terms of Service pages.
+    *   Updated the navigation and footers to include links to the new pages.
 
 ## Google Tag Integration
 - Google Tag (gtag.js) has been added to `index.html` within the `<head>` section for analytics tracking.
